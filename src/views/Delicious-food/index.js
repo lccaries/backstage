@@ -1,11 +1,7 @@
-import React, { Component } from 'react'
+import Archives from './Archives'
+import Category from './Category'
 
-export default class Delicious extends Component {
-    render() {
-        return (
-            <div>
-                美食部
-            </div>
-        )
-    }
+export {
+    Category,
+    Archives
 }

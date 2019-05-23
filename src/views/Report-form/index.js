@@ -1,11 +1,7 @@
-import React, { Component } from 'react'
+import Business from './Business'
+import Cashi from './Cashi'
 
-export default class index extends Component {
-    render() {
-        return (
-            <div>
-                报表页面
-            </div>
-        )
-    }
+export {
+    Cashi,
+    Business
 }
