@@ -4,23 +4,27 @@ import { render } from 'react-dom'
 import './index.less'
 import App from './App'
 import { mainRoutes } from './routes'
+import { LocaleProvider } from "antd"
+import zhCN from 'antd/lib/locale-provider/zh_CN';
 render(
-    <Router>
-        <Switch>
-          <Route 
-           path="/admin"
-           render={(routerprops)=>{
-               return <App {...routerprops}/>
-           }}
-          />
-            {
-                mainRoutes.map(item => {
-                    return <Route path={item.pathname} key={item.pathname} component={item.component}/>
-                })
-            }
-            <Redirect to="/admin" from='/' exact />
-            <Redirect to='/404'/>
-        </Switch>
-    </Router>,
+    <LocaleProvider locale={zhCN}>
+        <Router>
+            <Switch>
+            <Route 
+            path="/admin"
+            render={(routerprops)=>{
+                return <App {...routerprops}/>
+            }}
+            />
+                {
+                    mainRoutes.map(item => {
+                        return <Route path={item.pathname} key={item.pathname} component={item.component}/>
+                    })
+                }
+                <Redirect to="/admin" from='/' exact />
+                <Redirect to='/404'/>
+            </Switch>
+        </Router>
+    </LocaleProvider>,
     document.querySelector("#root")
 )
