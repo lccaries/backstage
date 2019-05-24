@@ -4,7 +4,6 @@ import { render } from 'react-dom'
 import './index.less'
 import App from './App'
 import { mainRoutes } from './routes'
-console.log(mainRoutes)
 render(
     <Router>
         <Switch>
@@ -20,7 +19,7 @@ render(
                 })
             }
             <Redirect to="/admin" from='/' exact />
-            <Redirect to='404'/>
+            <Redirect to='/404'/>
         </Switch>
     </Router>,
     document.querySelector("#root")
