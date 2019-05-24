@@ -21,39 +21,48 @@ export const mainRoutes = [{
 export const adminRoutes = [{
     pathname: '/admin/home',
     component: Home,
-    title: '首页'
+    title: '首页',
+    icon: 'home'
 },{
     pathname:'food',
     title: '美食部',
+    icon: 'meh',
     children:[
         {
             pathname: '/admin/archives',
             component: Archives,
-            title: '菜品档案'
+            title: '菜品档案',
+            icon: 'snippets'
         },{
             pathname: '/admin/category',
             component: Category,
-            title: '菜品分类'
+            title: '菜品分类',
+            icon: 'snippets'
         }
     ]
 },{
     pathname: '/admin/promotion',
     component: Promotion,
-    title: '促销'
+    title: '促销',
+    icon: 'account-book'
 },{
     pathname: 'form',
     title: '报表',
+    icon: 'database',
     children: [{
         pathname: '/admin/business',
         component: Business,
-        title: '营业统计'
+        title: '营业统计',
+        icon: 'snippets'
     },{
         pathname: '/admin/cashi',
         component: Cashi,
-        title: '收银流水'
+        title: '收银流水',
+        icon: 'snippets'
     }]
 },{
     pathname: '/admin/Settings',
     component: Settings,
-    title: '设置'
+    title: '设置',
+    icon: 'setting'
 }]

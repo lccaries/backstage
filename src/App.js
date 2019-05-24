@@ -2,17 +2,16 @@ import React, { Component } from 'react'
 import { adminRoutes } from './routes'
 import { Frame } from './components'
 import { Route,Switch,Redirect } from 'react-router-dom'
+const menus = { adminRoutes }
 export default class App extends Component {
   render() {
     return (
-      <Frame>
+      <Frame menus={menus} >
         <Switch >
           {
             adminRoutes.map(item => {
-              console.log(item.pathname)
                 if(item.pathname==="food"){
                   return item.children.map(route => {
-                     console.log(route)
                       return (
                         <Route 
                           path={route.pathname} 
@@ -27,7 +26,6 @@ export default class App extends Component {
                 }
                 if(item.pathname==="form"){
                   return item.children.map(route => {
-                    console.log(route)
                     return (
                       <Route 
                         path={route.pathname} 

@@ -1,14 +1,18 @@
 import React, { Component } from 'react'
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import { Layout, Menu, Icon } from 'antd';
 import logo from './logo.png'
 import './Frame.less'
-const { SubMenu } = Menu;
+import { withRouter } from 'react-router-dom'
+const SubMenu =Menu.SubMenu;
 const { Header, Content, Sider } = Layout;
-
-export default class Frame extends Component {
+@withRouter
+class Frame extends Component {
+    onMenuItem = (item) => {
+        this.props.history.push(item.key)
+    }
     render() {
         return (
-            <Layout>
+            <Layout style={{minHeight: '100%'}}>
                 <Header className="header lw-header">
                     <div className="lw-logo" >
                       <img src={logo} alt="LWLCC"/>
@@ -18,61 +22,75 @@ export default class Frame extends Component {
                     <Sider width={200} style={{ background: '#fff' }}>
                     <Menu
                         mode="inline"
-                        defaultSelectedKeys={['1']}
+                        selectedKeys={[this.props.location.pathname]}
                         defaultOpenKeys={['sub1']}
+                        onClick={this.onMenuItem}
                         style={{ height: '100%', borderRight: 0 }}
                     >
-                        <SubMenu
-                        key="sub1"
-                        title={
-                            <span>
-                            <Icon type="user" />
-                            subnav 1
-                            </span>
-                        }
-                        >
-                        <Menu.Item key="1">option1</Menu.Item>
-                        <Menu.Item key="2">option2</Menu.Item>
-                        <Menu.Item key="3">option3</Menu.Item>
-                        <Menu.Item key="4">option4</Menu.Item>
-                        </SubMenu>
-                        <SubMenu
-                        key="sub2"
-                        title={
-                            <span>
-                            <Icon type="laptop" />
-                            subnav 2
-                            </span>
-                        }
-                        >
-                        <Menu.Item key="5">option5</Menu.Item>
-                        <Menu.Item key="6">option6</Menu.Item>
-                        <Menu.Item key="7">option7</Menu.Item>
-                        <Menu.Item key="8">option8</Menu.Item>
-                        </SubMenu>
-                        <SubMenu
-                        key="sub3"
-                        title={
-                            <span>
-                            <Icon type="notification" />
-                            subnav 3
-                            </span>
-                        }
-                        >
-                        <Menu.Item key="9">option9</Menu.Item>
-                        <Menu.Item key="10">option10</Menu.Item>
-                        <Menu.Item key="11">option11</Menu.Item>
-                        <Menu.Item key="12">option12</Menu.Item>
-                        </SubMenu>
+                        {
+                            this.props.menus.adminRoutes.map((item) => { 
+                               if(item.pathname==='food'){
+                                   return (
+                                       <SubMenu
+                                       key={item.pathname}
+                                       title={
+                                           <span>
+                                               <Icon type={item.icon} theme="twoTone"/>
+                                               {item.title} 
+                                           </span>
+                                       }
+                                       >
+                                        {
+                                            item.children.map(route => {
+                                                return (<Menu.Item 
+                                                    key={route.pathname}
+                                                    >
+                                                    <Icon type={route.icon} theme="twoTone"/>
+                                                    {route.title}
+                                                    </Menu.Item>)
+                                            })
+                                        } 
+                                       </SubMenu>
+                                   )
+                               }
+                               if(item.pathname==='form'){
+                                return (
+                                    <SubMenu 
+                                    key={item.pathname}
+                                    title={
+                                        <span>
+                                            <Icon type={item.icon} theme="twoTone"/>
+                                            {item.title} 
+                                        </span>
+                                    }
+                                    >
+                                        {
+                                            item.children.map(route => {
+                                                return (<Menu.Item 
+                                                    key={route.pathname}
+                                                    >
+                                                    <Icon type={route.icon} theme="twoTone"/>
+                                                    {route.title}
+                                                    </Menu.Item>)
+                                            })
+                                        }
+                                    </SubMenu>
+                                )
+                            }
+                            return (
+                                <Menu.Item
+                                key={item.pathname}
+                                >
+                                <Icon type={item.icon} theme="twoTone"/>
+                                {item.title}
+                                </Menu.Item>
+                            )
+                            })
+                        }             
                     </Menu>
                     </Sider>
-                    <Layout style={{ padding: '0 24px 24px' }}>
-                    <Breadcrumb style={{ margin: '16px 0' }}>
-                        <Breadcrumb.Item>Home</Breadcrumb.Item>
-                        <Breadcrumb.Item>List</Breadcrumb.Item>
-                        <Breadcrumb.Item>App</Breadcrumb.Item>
-                    </Breadcrumb>
-                    <Content
+                    <Layout style={{ padding: '16px' }}>
+                    <Content 
                         style={{
                         background: '#fff',
                         padding: 24,
@@ -88,3 +106,4 @@ export default class Frame extends Component {
         )
     }
 }
+export default Frame
