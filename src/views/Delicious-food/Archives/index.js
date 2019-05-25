@@ -24,7 +24,11 @@ export default class Archives extends Component {
             //总页码
             total:0, 
             //是否在请求数据 默认为false
-            loading: false
+            loading: false,
+            //每次请求从第多少条开始 默认从0开始
+            offset:0,
+            //每次请求多少条
+            limited: 10
         }
     }
     createColumn = (column) => {
@@ -73,7 +77,8 @@ export default class Archives extends Component {
         this.setState({
             loading: true
         })
-        getArchives()
+        //把要请求的数据要求参数传给后端
+        getArchives(this.state.offset,this.state.limited)
         .then(resp => {
             console.log(resp)
             const column = Object.keys(resp.list[0])
@@ -94,9 +99,30 @@ export default class Archives extends Component {
             })            
         })
     }
+    //更改页数触发的事件
+    onPageChange = (page,pagesize) => {
+        this.setState({
+            offset: pagesize*(page-1),
+            limited:pagesize
+            //当每次更改完页数之后数据要重新请求
+        },() => {
+            this.getData()
+        })
+    }
+    //改变每页多少条触发的事件
+    onSizeChange = (current,size) => {
+        //在这里要和产品沟通的时候必须仔细核对需求 究竟回到首页还是当前页  如果是在当前页那么用户可能缺失了中间差值的页面
+        this.setState({
+            offset: 0,
+            limited: size
+            //当每次更改完页数之后数据要重新请求
+        },() => {
+            this.getData()
+        })         
+    }
     componentDidMount() {
         this.getData()
-    }
+    } 
     render() {
         return (
             <Card 
@@ -111,8 +137,13 @@ export default class Archives extends Component {
             columns={this.state.columns} 
             loading={this.state.loading}
             pagination={{
+                current: this.state.offset/this.state.limited+1,
+                showSizeChanger:true,
+                pageSizeOptions:['10', '15', '20'],
                 total: this.state.total,
-                showQuickJumper: true
+                showQuickJumper: true,
+                onChange: this.onPageChange,
+                onShowSizeChange: this.onSizeChange
             }}
             />
             </Card>
