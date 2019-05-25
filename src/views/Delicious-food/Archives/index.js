@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Card,Button,Table,Tag } from 'antd'
 import { getArchives } from '../../../requests'
 import moment from 'moment'
+import  XLSX from 'xlsx'
 const ButtonGroup = Button.Group;
 //定义的table里面每一列的标题
 const dataSources = {
@@ -120,6 +121,29 @@ export default class Archives extends Component {
             this.getData()
         })         
     }
+    onExcel = () => {
+       console.log('sadsa')
+        /* convert state to workbook */
+        //组合数据
+        // const excelData = []
+        // excelData.push(Object.values(dataSources)) 
+        // this.state.dataSource.map(item => { 
+        //     excelData.push(Object.values(item))
+        // })
+        //格式化时间
+        const excelData = []
+        excelData.push(Object.values(dataSources))
+        this.state.dataSource.map(item => { 
+             item.createAt = moment(item.createAt).format('YYYY年MM月DD日 hh:mm:ss ')
+             excelData.push(Object.values(item))
+        })   
+        console.log(excelData)           
+		const ws = XLSX.utils.aoa_to_sheet(excelData);
+		const wb = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(wb, ws, "SheetJS");
+		/* generate XLSX file and send to client */
+		XLSX.writeFile(wb, `美食档案部的第${this.state.offset/this.state.limited+1}页的数据.xlsx`)
+    }
     componentDidMount() {
         this.getData()
     } 
@@ -128,7 +152,7 @@ export default class Archives extends Component {
             <Card 
             border='false'
             title="美食档案部"
-             extra={<Button>导出Excel</Button>}>
+             extra={<Button onClick={this.onExcel}>导出Excel</Button>}>
             <Table
             rowKey= {(record)=> {
                 return record.id
