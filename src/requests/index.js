@@ -22,7 +22,14 @@ ajax1.interceptors.response.use(resp => {
     }
 })
 
-
+//请求档案数据
 export const getArchives = (offset=0,limited=10) => {
     return ajax1.post('/api/v1/archives',{offset,limited})
+}
+//通过name删除档案数据
+export const deleteArchives = (name) => {
+    //直接在接口上传入name
+    return ajax1.post(`/api/v1/archives/delete/${name}`)
+    //在body里面传入name
+    // return ajax1.post(`/api/v1/archives/delete`，{name})
 }

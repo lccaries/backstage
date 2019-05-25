@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Card,Button,Table,Tag } from 'antd'
-import { getArchives } from '../../../requests'
+import { Card,Button,Table,Tag,Modal,Typography,message } from 'antd'
+import { getArchives , deleteArchives } from '../../../requests'
 import moment from 'moment'
 import  XLSX from 'xlsx'
+const { Text } = Typography;
 const ButtonGroup = Button.Group;
 //定义的table里面每一列的标题
 const dataSources = {
@@ -29,7 +30,16 @@ export default class Archives extends Component {
             //每次请求从第多少条开始 默认从0开始
             offset:0,
             //每次请求多少条
-            limited: 10
+            limited: 10,
+            //删除按钮模态框的状态
+            isShowModal: false,
+            //删除的是那条数据的name
+            isdeleteName: '',
+            //点击删除弹框确定按钮的loading
+            confirmLoading: false,
+            //删除的数据
+            deleteArchive: null
+
         }
     }
     createColumn = (column) => {
@@ -62,17 +72,80 @@ export default class Archives extends Component {
         columns.push({
             title: '操作',
             key: "item",
-            render: () => {
+            render: (text) => {
                 return(
                     <ButtonGroup>
                         <Button type="primary">编辑</Button>
-                        <Button type="danger">删除</Button>
+                        <Button type="danger" onClick={this.deleteArchives.bind(this,text)}>删除</Button>
                     </ButtonGroup>
                 )
              }            
         })
         return columns
     }
+    //删除事件的方法
+    deleteArchives = (text) => {
+        // //使用函数的话定制性没有那么强
+        // //对话框提示
+        // Modal.confirm({
+        //     title: <Text>你确定要删除<span style={{color:'red',fontSize:'bold'}}>{text.name}</span>吗？</Text>,
+        //     content: <Text strong = 'true' type = 'danger'>此操作不可逆！！！！</Text>,
+        //     confirmLoading: this.state.confirmLoading,
+        //     // 点击确定之后的回调
+        //     onOk() {
+        //         //更改确定按钮的转态为loading
+        //         this.setState({
+        //             confirmLoading: true
+        //         })
+        //         deleteArchives(text.name)
+        //         .then((resp) => {
+                    
+        //         })
+        //         .finally(() => {
+        //             this.setState({
+        //                 confirmLoading: false
+        //             })
+        //         })
+        //     }
+        // })
+        this.setState({
+            deleteArchive: text,
+            isdeleteName: text.name,
+            isShowModal: true
+        })
+    }
+    //取消删除
+    cancelDelete = () => {
+        this.setState({
+            isdeleteName: '',
+            isShowModal: false,
+            // deleteArchive: null
+        })        
+    }
+    //确定删除的方法
+    okDelete = () => {
+         this.setState({
+            confirmLoading: true,
+         })
+         deleteArchives(this.state.deleteArchive.id)
+         .then((resp) => {
+            message.success(resp.Msg)
+            //这里有坑 就是删除数据之后我们留在第一页还是在当前页
+            //回到第一页
+            this.setState({
+                offset:0
+            },() => {
+                this.getData()
+            })
+         })
+         .finally(() => {
+            this.setState({
+                confirmLoading: false,
+                isShowModal: false
+             })
+         })
+    }
+    //获取档案页的方法
     getData = () =>{
         //需要请求数据的时候把loading的状态改为true
         this.setState({
@@ -100,7 +173,7 @@ export default class Archives extends Component {
             })            
         })
     }
-    //更改页数触发的事件
+    //更改页数触发的方法
     onPageChange = (page,pagesize) => {
         this.setState({
             offset: pagesize*(page-1),
@@ -110,7 +183,7 @@ export default class Archives extends Component {
             this.getData()
         })
     }
-    //改变每页多少条触发的事件
+    //改变每页多少条触发的方法
     onSizeChange = (current,size) => {
         //在这里要和产品沟通的时候必须仔细核对需求 究竟回到首页还是当前页  如果是在当前页那么用户可能缺失了中间差值的页面
         this.setState({
@@ -170,6 +243,20 @@ export default class Archives extends Component {
                 onShowSizeChange: this.onSizeChange
             }}
             />
+                <Modal
+                title={<Text>你确定要删除<span style={{color:'red',fontSize:'900'}}>{this.state.isdeleteName}</span>吗？</Text>}
+                visible={this.state.isShowModal}
+                //确认按钮的事件
+                onOk={this.okDelete}
+                //取消按钮的事件
+                onCancel={this.cancelDelete}
+                //这里的写法需要注意 点击蒙层 模态框不关闭
+                maskClosable={false}
+                //确定按钮的loading状态
+                confirmLoading={this.state.confirmLoading}
+                >
+                  <span>此操作不可逆哦！！！！！请谨慎</span>      
+                </Modal>            
             </Card>
         )
     }
